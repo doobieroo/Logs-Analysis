@@ -32,7 +32,7 @@ Download [Logs-Analysis](https://github.com/doobieroo/Logs-Analysis).
 
 
 ## Unit Testing
-To test this code, ensure you are connected to the virtual machine, then from a console window (like Git Bash) run logs_analysis.py from the vagrant directory (or shared virtual machine directory). You will see the answers to the three questions printed out within the terminal window.
+To test this code, ensure you are connected to the virtual machine, then from a console window (like Git Bash) run logs_analysis.py from the vagrant directory (or shared virtual machine directory). You will see the answers to the three questions printed out within the console window.
 
 ## License
 This project is licensed under the GNU General Public License. See the [LICENSE](https://github.com/doobieroo/Logs-Analysis/blob/master/LICENSE) for details.
