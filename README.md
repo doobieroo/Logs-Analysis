@@ -1,6 +1,6 @@
 # Logs Analysis
 
-This project will query a PostgreSQL database (called "news") located on a virtual machine using a python program in order to answer three questions.
+This project will query a PostgreSQL database (called "news") located on a virtual machine using a Python program in order to answer three questions.
 
 1. What are the most popular three articles of all time?
 2. Who are the most popular authors of all time?
