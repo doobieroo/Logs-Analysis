@@ -26,7 +26,7 @@ def get_articles():
     # retrieve data from query using fetchall
     pop_articles = c.fetchall()
     # print header for popular articles
-    print ('\nWhat are the most popular three articles of all time?\n')
+    print '\nWhat are the most popular three articles of all time?\n'
 
     # for every row print article name and nbr of views
     for row in pop_articles:
@@ -56,11 +56,11 @@ def get_authors():
     # retrieve data from query using fetchall
     pop_authors = c.fetchall()
     # print header for popular authors
-    print ('\nWho are the most popular article authors of all time?\n')
+    print '\nWho are the most popular article authors of all time?\n'
 
     # for every row print author name and total views
     for row in pop_authors:
-        print ("  ", row[0], "-", row[1], "views")
+        print "  ", row[0], "-", row[1], "views"
 
     # close db connection
     db.close()
@@ -91,13 +91,13 @@ def get_errors():
     # retrieve data from query using fetchall
     err_days = c.fetchall()
     # print header for error days
-    print ("\nOn which days did more than 1% of requests lead to errors?\n")
+    print "\nOn which days did more than 1% of requests lead to errors?\n"
 
     # for every row print date (Month DD, YYYY) and err %
     for row in err_days:
         bad_status = "  " + row[0] + " - " + str(row[1]) + "% errors\n"
         sys.stdout.write(bad_status)
-        print ('\n')
+        print '\n'
 
     # close db connection
     db.close()
