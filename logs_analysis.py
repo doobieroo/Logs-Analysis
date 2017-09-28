@@ -6,101 +6,100 @@ import sys
 DBNAME = "news"
 
 
+# func to execute db queries
+def execute_query(query):
+    try:
+        # connect to database named "news"
+        db = psycopg2.connect(database=DBNAME)
+        # open cursor for use with query
+        c = db.cursor()
+        # execute the query
+        c.execute(query)
+        # store the results of the query using fetchall
+        results = c.fetchall()
+        # close db connection
+        db.close()
+        # return the results of the query
+        return (results)
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+
 # func to find 3 most accessed articles sorted with most pop article at top
 def get_articles():
 
-    # connect to database named "news"
-    db = psycopg2.connect(database=DBNAME)
-    # open cursor for use with query
-    c = db.cursor()
+    # SQL to retrieve most popular three articles
+    query = ("""
+        SELECT title, count(title)
+        FROM log, articles
+        WHERE '/article/' || articles.slug = log.path
+        GROUP BY title
+        ORDER BY count DESC
+        LIMIT 3""")
+    # call execute_query function to perform query
+    pop_articles = execute_query(query)
 
-    # execute sql to retrieve most popular three articles
-    c.execute("""
-        select title, count(title)
-        from log, articles
-        where substring(path, 10) = slug
-        group by title
-        order by count desc
-        limit 3""")
-
-    # retrieve data from query using fetchall
-    pop_articles = c.fetchall()
     # print header for popular articles
     print('\nWhat are the most popular three articles of all time?\n')
 
     # for every row print article name and nbr of views
-    for row in pop_articles:
-        lst = "  " + '"' + row[0] + '"' + " - " + str(row[1]) + " views\n"
+    for title, views in pop_articles:
+        lst = "  " + '"' + title + '"' + " - " + str(views) + " views\n"
         sys.stdout.write(lst)
-
-    # close db connection
-    db.close()
 
 
 # func to find the authors w/ most pg views sorted w/ most pop author at top
 def get_authors():
 
-    # connect to a database named "news"
-    db = psycopg2.connect(database=DBNAME)
-    # open cursor for use with query
-    c = db.cursor()
+    # SQL to retrieve most popular authors
+    query = ("""
+        SELECT name, count(title)
+        FROM log, articles, authors
+        WHERE '/article/' || articles.slug = log.path
+        AND authors.id = articles.author
+        GROUP BY authors.name
+        ORDER BY count DESC""")
 
-    # execute sql to retrieve most popular authors
-    c.execute("""
-        select name, count(title)
-        from log, articles, authors
-        where substring(path, 10) = slug and authors.id = articles.author
-        group by authors.name
-        order by count desc""")
+    # call execute_query function to perform query
+    pop_authors = execute_query(query)
 
-    # retrieve data from query using fetchall
-    pop_authors = c.fetchall()
     # print header for popular authors
     print('\nWho are the most popular article authors of all time?\n')
 
     # for every row print author name and total views
-    for row in pop_authors:
-        print("  ", row[0], "-", row[1], "views")
-
-    # close db connection
-    db.close()
+    for name, views in pop_authors:
+        print("  ", name, "-", views, "views")
 
 
 # function to find which days received more than 1% of error requests
 def get_errors():
 
-    # connect to a database named "news"
-    db = psycopg2.connect(database=DBNAME)
-    # open cursor for use with query
-    c = db.cursor()
-
-    # execute sql to retrieve error codes more than 1% (from 2 diff views)
-    c.execute("""
-        with t as (
-            select tot_reqs.date,
+    # SQL to retrieve error codes more than 1% (from 2 diff views)
+    query = ("""
+        WITH t AS (
+            SELECT tot_reqs.date,
                    round((tot_err::numeric / totals::numeric) * 100, 2)
-                    as pct_errs
-            from err_reqs, tot_reqs
-            where err_reqs.date = tot_reqs.date
+                    AS pct_errs
+            FROM err_reqs, tot_reqs
+            WHERE err_reqs.date = tot_reqs.date
             )
-        select to_char(to_date(date, 'YYYY-MM-DD'), 'TMMonth DD"," YYYY'),
+        SELECT to_char(date, 'TMMonth DD"," YYYY'),
                pct_errs
-        from t
-        where pct_errs > 1.0""")
+        FROM t
+        WHERE pct_errs > 1.0""")
 
-    # retrieve data from query using fetchall
-    err_days = c.fetchall()
+    # call execute_query function to perform query
+    err_days = execute_query(query)
+
     # print header for error days
     print("\nOn which days did more than 1% of requests lead to errors?\n")
 
     # for every row print date (Month DD, YYYY) and err %
-    for row in err_days:
-        bad_status = "  " + row[0] + " - " + str(row[1]) + "% errors\n"
+    for date, pct_errs in err_days:
+        bad_status = "  " + date + " - " + str(pct_errs) + "% errors\n"
         sys.stdout.write(bad_status)
         print('\n')
-
-    # close db connection
-    db.close()
 
 
 # execute all three functions
